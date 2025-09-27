@@ -22,9 +22,32 @@ init_environment() {
 verify_tools() {
     bashio::log.info "Verifying required tools..."
     
-    # Check if Warp CLI is available
-    if ! command -v warp >/dev/null 2>&1; then
-        bashio::log.error "Warp CLI not found in PATH"
+    # Debug: Show current PATH and check for warp binary
+    bashio::log.info "Current PATH: $PATH"
+    bashio::log.info "Checking for warp binary..."
+    
+    # Check if Warp CLI binary exists
+    if [ -f "/usr/local/bin/warp" ]; then
+        bashio::log.info "Warp CLI binary found at /usr/local/bin/warp"
+        
+        # Check if it's executable
+        if [ -x "/usr/local/bin/warp" ]; then
+            bashio::log.info "Warp CLI binary is executable"
+        else
+            bashio::log.warning "Warp CLI binary is not executable, attempting to fix..."
+            chmod +x /usr/local/bin/warp
+        fi
+        
+        # Test if command works
+        if command -v warp >/dev/null 2>&1; then
+            bashio::log.info "Warp CLI is accessible via command"
+        else
+            bashio::log.warning "Warp CLI not in PATH, but binary exists"
+        fi
+    else
+        bashio::log.error "Warp CLI binary not found at /usr/local/bin/warp"
+        bashio::log.info "Attempting to locate warp binary..."
+        find /usr -name "warp" -type f 2>/dev/null || bashio::log.info "No warp binary found in /usr"
         exit 1
     fi
     

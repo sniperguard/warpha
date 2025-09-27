@@ -16,9 +16,20 @@ init_warp_config() {
 }
 
 check_warp_auth() {
-    # Check if Warp CLI is authenticated
+    # Check if Warp CLI binary exists and is executable
+    if [ ! -f "/usr/local/bin/warp" ]; then
+        bashio::log.error "Warp CLI binary not found at /usr/local/bin/warp"
+        return 1
+    fi
+    
+    if [ ! -x "/usr/local/bin/warp" ]; then
+        bashio::log.error "Warp CLI binary is not executable"
+        return 1
+    fi
+    
+    # Check if Warp CLI is available and working
     if /usr/local/bin/warp --version >/dev/null 2>&1; then
-        bashio::log.info "Warp CLI is available"
+        bashio::log.info "Warp CLI is available and working"
         
         # Try to check auth status (this may vary based on actual Warp CLI implementation)
         if /usr/local/bin/warp auth status >/dev/null 2>&1; then
@@ -29,7 +40,10 @@ check_warp_auth() {
             return 1
         fi
     else
-        bashio::log.error "Warp CLI is not available or not working"
+        bashio::log.error "Warp CLI is not working properly"
+        # Show more debug info
+        bashio::log.info "Debug: Warp CLI output:"
+        /usr/local/bin/warp --version 2>&1 || bashio::log.info "Warp CLI failed to run"
         return 1
     fi
 }
