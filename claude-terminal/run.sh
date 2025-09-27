@@ -85,30 +85,33 @@ get_warp_launch_command() {
 #!/bin/bash
 clear
 echo "======================================"
-echo "🚀 Welcome to Warp Terminal!"
+echo "🚀 Welcome to Warp Terminal for HA!"
 echo "======================================"
 echo ""
 echo "Available Warp commands:"
-echo "  warp login          - Authenticate with Warp"
-echo "  warp agent run      - Run an AI agent with a prompt"
-echo "  warp agent profile  - Manage agent profiles"
-echo "  warp mcp list       - List MCP servers"
-echo "  warp help          - Show help"
+echo "  warp login          - Show welcome message"
+echo "  warp agent run      - Simulate AI agent mode"
+echo "  warp agent profile  - Show available profiles"
+echo "  warp help          - Show all commands"
+echo "  warp --version      - Show version info"
 echo ""
 echo "Environment:"
 echo "  WARP_CONFIG_DIR: $WARP_CONFIG_DIR"
 echo "  PATH: $PATH"
+echo "  Current directory: $(pwd)"
 echo ""
 
-# Check if authenticated
-if warp auth status >/dev/null 2>&1; then
-    echo "✅ Warp CLI is authenticated"
+# Check if wrapper is working
+if warp --version >/dev/null 2>&1; then
+    echo "✅ Warp terminal wrapper is ready"
+    echo "📁 Navigate to /config for Home Assistant files"
 else
-    echo "⚠️  Authentication required. Run: warp login"
+    echo "⚠️  Terminal wrapper issue detected"
 fi
 
 echo ""
-echo "Starting bash shell with Warp CLI available..."
+echo "Starting enhanced bash shell..."
+echo "💡 Tip: Try 'warp help' for available commands"
 echo ""
 exec bash
 EOF
