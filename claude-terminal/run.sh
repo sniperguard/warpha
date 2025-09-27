@@ -1,76 +1,109 @@
 #!/usr/bin/with-contenv bashio
 
-# Initialize environment for Claude Code CLI
+# Initialize environment for Warp CLI
 init_environment() {
-    # Ensure claude-config directory exists for persistent storage
-    mkdir -p /config/claude-config
-    chmod 755 /config/claude-config
+    # Ensure warp config directory exists for persistent storage
+    mkdir -p /config/.warp
+    chmod 755 /config/.warp
 
-    # Set up Claude Code CLI config directory
-    mkdir -p /root/.config
-    
-    # Remove existing link if it exists and create fresh symlink
-    rm -rf /root/.config/anthropic
-    ln -sf /config/claude-config /root/.config/anthropic
-
-    # Ensure proper permissions on any existing credential files
-    if [ -f "/config/claude-config/session_key" ]; then
-        chmod 600 /config/claude-config/session_key
-    fi
-    if [ -f "/config/claude-config/client.json" ]; then
-        chmod 600 /config/claude-config/client.json
-    fi
-
-    # Set environment variables for Claude Code CLI
-    export ANTHROPIC_CONFIG_DIR="/config/claude-config"
+    # Set environment variables for Warp CLI
+    export WARP_CONFIG_DIR="/config/.warp"
     export HOME="/root"
+    export PATH="/usr/local/bin:$PATH"
     
-    bashio::log.info "Credential directory initialized: /config/claude-config"
+    # Ensure .bashrc exists and has Warp environment
+    echo 'export WARP_CONFIG_DIR="/config/.warp"' >> /root/.bashrc
+    echo 'export PATH="/usr/local/bin:$PATH"' >> /root/.bashrc
+    
+    bashio::log.info "Warp config directory initialized: /config/.warp"
 }
 
-# Install required tools
-install_tools() {
-    bashio::log.info "Installing additional tools..."
-    if ! apk add --no-cache ttyd jq curl; then
-        bashio::log.error "Failed to install required tools"
+# Verify required tools
+verify_tools() {
+    bashio::log.info "Verifying required tools..."
+    
+    # Check if Warp CLI is available
+    if ! command -v warp >/dev/null 2>&1; then
+        bashio::log.error "Warp CLI not found in PATH"
         exit 1
     fi
-    bashio::log.info "Tools installed successfully"
+    
+    # Check if ttyd is available
+    if ! command -v ttyd >/dev/null 2>&1; then
+        bashio::log.error "ttyd not found"
+        exit 1
+    fi
+    
+    bashio::log.info "All required tools verified successfully"
 }
 
-# Setup session picker script
-setup_session_picker() {
-    # Copy session picker script from built-in location
-    if [ -f "/opt/scripts/claude-session-picker.sh" ]; then
-        if ! cp /opt/scripts/claude-session-picker.sh /usr/local/bin/claude-session-picker; then
-            bashio::log.error "Failed to copy claude-session-picker script"
-            exit 1
-        fi
-        chmod +x /usr/local/bin/claude-session-picker
-        bashio::log.info "Session picker script installed successfully"
+# Setup Warp authentication
+setup_warp_auth() {
+    # Run Warp authentication setup script
+    if [ -f "/opt/scripts/warp_auth.sh" ]; then
+        bashio::log.info "Setting up Warp authentication..."
+        chmod +x /opt/scripts/warp_auth.sh
+        /opt/scripts/warp_auth.sh
     else
-        bashio::log.warning "Session picker script not found, using auto-launch mode only"
+        bashio::log.warning "Warp auth script not found, manual authentication may be required"
     fi
 }
 
-# Determine Claude launch command based on configuration
-get_claude_launch_command() {
-    local auto_launch_claude
+# Get Warp launch command based on configuration
+get_warp_launch_command() {
+    local auto_launch_warp
     
     # Get configuration value, default to true for backward compatibility
-    auto_launch_claude=$(bashio::config 'auto_launch_claude' 'true')
+    auto_launch_warp=$(bashio::config 'auto_launch_warp' 'true')
     
-    if [ "$auto_launch_claude" = "true" ]; then
-        # Original behavior: auto-launch Claude directly
-        echo "clear && echo 'Welcome to Claude Terminal!' && echo '' && echo 'Starting Claude...' && sleep 1 && node \$(which claude)"
+    if [ "$auto_launch_warp" = "true" ]; then
+        # Create a welcome script that shows Warp info and provides a shell
+        cat > /tmp/warp_welcome.sh << 'EOF'
+#!/bin/bash
+clear
+echo "======================================"
+echo "🚀 Welcome to Warp Terminal!"
+echo "======================================"
+echo ""
+echo "Available Warp commands:"
+echo "  warp login          - Authenticate with Warp"
+echo "  warp agent run      - Run an AI agent with a prompt"
+echo "  warp agent profile  - Manage agent profiles"
+echo "  warp mcp list       - List MCP servers"
+echo "  warp help          - Show help"
+echo ""
+echo "Environment:"
+echo "  WARP_CONFIG_DIR: $WARP_CONFIG_DIR"
+echo "  PATH: $PATH"
+echo ""
+
+# Check if authenticated
+if warp auth status >/dev/null 2>&1; then
+    echo "✅ Warp CLI is authenticated"
+else
+    echo "⚠️  Authentication required. Run: warp login"
+fi
+
+echo ""
+echo "Starting bash shell with Warp CLI available..."
+echo ""
+exec bash
+EOF
+        chmod +x /tmp/warp_welcome.sh
+        echo "/tmp/warp_welcome.sh"
     else
-        # New behavior: show interactive session picker
-        if [ -f /usr/local/bin/claude-session-picker ]; then
-            echo "clear && /usr/local/bin/claude-session-picker"
+        # Use interactive session picker
+        if [ -f "/opt/scripts/warp-session-picker.sh" ]; then
+            echo "/opt/scripts/warp-session-picker.sh"
         else
             # Fallback if session picker is missing
             bashio::log.warning "Session picker not found, falling back to auto-launch"
-            echo "clear && echo 'Welcome to Claude Terminal!' && echo '' && echo 'Starting Claude...' && sleep 1 && node \$(which claude)"
+            cat > /tmp/warp_welcome.sh << 'EOF'
+#!/bin/bash
+exec bash
+EOF
+            chmod +x /tmp/warp_welcome.sh
+            echo "/tmp/warp_welcome.sh"
         fi
     fi
 }
@@ -79,37 +112,35 @@ get_claude_launch_command() {
 # Start main web terminal
 start_web_terminal() {
     local port=7681
-    bashio::log.info "Starting web terminal on port ${port}..."
+    bashio::log.info "Starting Warp web terminal on port ${port}..."
     
     # Log environment information for debugging
     bashio::log.info "Environment variables:"
-    bashio::log.info "ANTHROPIC_CONFIG_DIR=${ANTHROPIC_CONFIG_DIR}"
+    bashio::log.info "WARP_CONFIG_DIR=${WARP_CONFIG_DIR}"
     bashio::log.info "HOME=${HOME}"
+    bashio::log.info "PATH=${PATH}"
 
-    # Get the appropriate launch command based on configuration
+    # Get the Warp launch command
     local launch_command
-    launch_command=$(get_claude_launch_command)
+    launch_command=$(get_warp_launch_command)
     
-    # Log the configuration being used
-    local auto_launch_claude
-    auto_launch_claude=$(bashio::config 'auto_launch_claude' 'true')
-    bashio::log.info "Auto-launch Claude: ${auto_launch_claude}"
+    bashio::log.info "Launch command: ${launch_command}"
     
-    # Run ttyd with improved configuration
+    # Run ttyd with Warp configuration
     exec ttyd \
         --port "${port}" \
         --interface 0.0.0.0 \
         --writable \
-        bash -c "$launch_command"
+        "$launch_command"
 }
 
 # Main execution
 main() {
-    bashio::log.info "Initializing Claude Terminal add-on..."
+    bashio::log.info "Initializing Warp Terminal add-on..."
     
     init_environment
-    install_tools
-    setup_session_picker
+    verify_tools
+    setup_warp_auth
     start_web_terminal
 }
 

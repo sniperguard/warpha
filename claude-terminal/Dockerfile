@@ -3,16 +3,21 @@ FROM ${BUILD_FROM}
 
 # Install packages in a single layer to minimize image size
 RUN apk add --no-cache \
-    nodejs \
-    npm \
     bash \
     curl \
     nano \
-    && npm install -g @anthropic-ai/claude-code@latest \
-    && npm cache clean --force
+    tar \
+    ttyd \
+    jq
 
-# Create directory for Claude configuration and set working directory
-RUN mkdir -p /config/claude-config
+# Download and install Warp CLI
+RUN curl -L "https://app.warp.dev/download/cli?os=linux&package=tar&arch=x86_64" \
+    | tar -xz -C /usr/local/bin --strip-components=1 \
+    && chmod +x /usr/local/bin/warp \
+    && /usr/local/bin/warp --version || echo "Warp CLI installed"
+
+# Create directory for Warp configuration and set working directory
+RUN mkdir -p /config/.warp
 WORKDIR /config
 
 # Copy startup script and modular scripts

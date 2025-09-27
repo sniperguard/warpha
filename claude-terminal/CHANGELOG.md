@@ -1,5 +1,41 @@
 # Changelog
 
+## 2.0.0 - BREAKING CHANGES
+
+### 🚀 Major Migration to Warp CLI
+
+This version represents a complete migration from Claude Code CLI to Warp CLI, providing enhanced AI agent capabilities.
+
+### ⚠️ Breaking Changes
+
+- **CLI Change**: Replaced `claude` commands with `warp` commands
+- **Authentication**: Changed from Claude OAuth to Warp browser-based login
+- **Configuration**: New config directory `/config/.warp/` instead of `/config/claude-config/`
+- **Commands**: All Claude-specific commands replaced with Warp agent commands
+
+### ✨ New Features
+
+- **AI Agent Integration**: Run AI agents with natural language prompts using `warp agent run`
+- **MCP Server Support**: Integrate with Model Context Protocol servers
+- **Agent Profiles**: Customize agent behavior and permissions
+- **Interactive Session Picker**: Choose between different Warp operations
+- **Enhanced Terminal Experience**: Better welcome screen and command guidance
+
+### 🔧 Technical Changes
+
+- Replaced Node.js/NPM installation with Warp CLI binary
+- Updated Docker base image dependencies
+- New authentication workflow with `warp login`
+- Updated startup scripts and session management
+- Changed Home Assistant addon metadata and branding
+
+### 📖 Documentation Updates
+
+- Complete README rewrite for Warp Terminal
+- Updated installation and usage instructions
+- New troubleshooting section for Warp CLI
+- Updated useful links to Warp resources
+
 ## 1.1.4
 
 ### 🧹 Maintenance

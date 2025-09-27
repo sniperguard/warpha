@@ -1,84 +1,91 @@
-# Claude Terminal for Home Assistant
+# Warp Terminal for Home Assistant
 
-A secure, web-based terminal with Claude Code CLI pre-installed for Home Assistant.
+A powerful, web-based terminal with Warp CLI pre-installed for Home Assistant.
 
-![Claude Terminal Screenshot](https://github.com/heytcass/home-assistant-addons/raw/main/claude-terminal/screenshot.png)
+![Warp Terminal Screenshot](https://github.com/heytcass/home-assistant-addons/raw/main/claude-terminal/screenshot.png)
 
-*Claude Terminal running in Home Assistant*
+*Warp Terminal running in Home Assistant*
 
-## What is Claude Terminal?
+## What is Warp Terminal?
 
-This add-on provides a web-based terminal interface with Claude Code CLI pre-installed, allowing you to use Claude's powerful AI capabilities directly from your Home Assistant dashboard. It gives you direct access to Anthropic's Claude AI assistant through a terminal, ideal for:
+This add-on provides a web-based terminal interface with Warp CLI pre-installed, allowing you to use Warp's powerful AI agents directly from your Home Assistant dashboard. It gives you direct access to Warp's AI-powered terminal agents, ideal for:
 
-- Writing and editing code
-- Debugging problems
-- Learning new programming concepts
-- Creating Home Assistant scripts and automations
+- Running AI agents to automate tasks
+- Debugging Home Assistant issues with AI assistance
+- Managing your smart home configuration with AI help
+- Learning and coding with AI agent support
+- Integrating with MCP servers for enhanced capabilities
 
 ## Features
 
-- **Web Terminal Interface**: Access Claude through a browser-based terminal using ttyd
-- **Auto-Launch**: Claude starts automatically when you open the terminal
-- **Latest Claude Code CLI**: Pre-installed with Anthropic's official CLI (@latest)
-- **No Configuration Needed**: Uses OAuth authentication for easy setup
+- **Web Terminal Interface**: Access Warp agents through a browser-based terminal using ttyd
+- **AI Agent Integration**: Run powerful AI agents with natural language prompts
+- **Interactive Session Picker**: Choose between different Warp operations or direct shell access
+- **Latest Warp CLI**: Pre-installed with Warp's official CLI
+- **Simple Authentication**: Uses `warp login` browser-based authentication
 - **Direct Config Access**: Terminal starts in your `/config` directory for immediate access to all Home Assistant files
 - **Home Assistant Integration**: Access directly from your dashboard
-- **Panel Icon**: Quick access from the sidebar with the code-braces icon
+- **Panel Icon**: Quick access from the sidebar with the robot icon
 - **Multi-Architecture Support**: Works on amd64, aarch64, and armv7 platforms
+- **MCP Server Support**: Integrate with Model Context Protocol servers
+- **Agent Profiles**: Customize agent behavior and permissions
 - **Secure Credential Management**: Persistent authentication with safe credential storage
-- **Automatic Recovery**: Built-in fallbacks and error handling for reliable operation
 
 ## Quick Start
 
-The terminal automatically starts Claude when you open it. You can immediately start using commands like:
+The terminal provides easy access to Warp AI agents. You can immediately start using commands like:
 
 ```bash
-# Ask Claude a question directly
-claude "How can I write a Python script to control my lights?"
+# Authenticate with Warp (first-time setup)
+warp login
 
-# Start an interactive session
-claude -i
+# Run an AI agent with a natural language prompt
+warp agent run --prompt "Fix the bug in my Home Assistant automation"
+
+# List available agent profiles
+warp agent profile list
+
+# List MCP servers
+warp mcp list
 
 # Get help with available commands
-claude --help
+warp help
 
-# Debug authentication if needed
-claude-auth debug
-
-# Log out and re-authenticate
-claude-logout
+# Use the interactive session picker
+# (available when auto-launch is disabled in addon config)
 ```
 
 ## Installation
 
 1. Add this repository to your Home Assistant add-on store
-2. Install the Claude Terminal add-on
+2. Install the Warp Terminal add-on
 3. Start the add-on
 4. Click "OPEN WEB UI" or the sidebar icon to access
-5. On first use, follow the OAuth prompts to log in to your Anthropic account
+5. On first use, run `warp login` and follow the browser-based authentication
 
 ## Configuration
 
-The add-on requires no configuration. All settings are handled automatically:
+The add-on has minimal configuration options:
 
 - **Port**: Web interface runs on port 7681
-- **Authentication**: OAuth with Anthropic (credentials stored securely in `/config/claude-config/`)
-- **Terminal**: Full bash environment with Claude Code CLI pre-installed
+- **Authentication**: Browser-based OAuth with Warp (credentials stored securely in `/config/.warp/`)
+- **Terminal**: Full bash environment with Warp CLI pre-installed
 - **Volumes**: Access to both `/config` (Home Assistant) and `/addons` (for development)
+- **Auto-launch Warp Shell**: Enable/disable automatic shell launch vs. interactive session picker
 
 ## Troubleshooting
 
 ### Authentication Issues
 If you have authentication problems:
 ```bash
-claude-auth debug    # Show credential status
-claude-logout        # Clear credentials and re-authenticate
+warp login           # Re-authenticate with Warp
 ```
 
 ### Container Issues
 - Credentials are automatically saved and restored between restarts
 - Check add-on logs if the terminal doesn't load
-- Restart the add-on if Claude commands aren't recognized
+- Restart the add-on if Warp commands aren't recognized
+- Verify Warp CLI is available: `warp --version`
 
 ### Development
 For local development and testing:
@@ -134,32 +141,31 @@ For detailed usage instructions, see the [documentation](DOCS.md).
 
 ## Version History
 
-### v1.0.2 (Current) - Security & Bug Fix Release
+### v2.0.0 (Current) - Major Migration to Warp CLI
+- 🚀 **BREAKING**: Migrated from Claude Code CLI to Warp CLI
+- 🤖 AI Agent integration with natural language prompts
+- 🔧 MCP server support for enhanced capabilities
+- 👤 Agent profile management
+- 🎯 Interactive session picker
+- 🔒 Browser-based authentication with Warp
+- 📱 Updated UI branding and icons
+
+### v1.0.2 - Security & Bug Fix Release (Claude CLI)
 - 🔒 **CRITICAL**: Fixed dangerous filesystem operations
 - 🐛 Added missing armv7 architecture support
 - 🔧 Pinned NPM packages and improved error handling
 - 🛠️ Enhanced development environment with Podman support
 
-### v1.0.1
-- Improved credential management
-- Enhanced startup reliability
-
-### v1.0.0
-- Initial stable release
-- Web terminal interface with ttyd
-- Pre-installed Claude Code CLI
-- OAuth authentication support
-
 ## Useful Links
 
-- [Claude Code Documentation](https://docs.anthropic.com/claude/docs/claude-code)
-- [Get an Anthropic API Key](https://console.anthropic.com/)
-- [Claude Code GitHub Repository](https://github.com/anthropics/claude-code)
+- [Warp CLI Documentation](https://docs.warp.dev/developers/cli)
+- [Warp Official Website](https://www.warp.dev/)
+- [MCP Servers](https://docs.warp.dev/knowledge-and-collaboration/mcp)
 - [Home Assistant Add-ons](https://www.home-assistant.io/addons/)
 
 ## Credits
 
-This add-on was created with the assistance of Claude Code itself! The development process, debugging, and documentation were all completed using Claude's AI capabilities - a perfect demonstration of what this add-on can help you accomplish.
+This add-on was migrated from Claude Terminal to Warp Terminal to provide enhanced AI agent capabilities. The migration demonstrates the power of AI-assisted development - exactly what this add-on now enables through Warp's AI agents.
 
 ## License
 

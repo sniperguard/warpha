@@ -1,7 +1,7 @@
-name: "Claude Terminal"
-description: "Terminal interface for Anthropic's Claude Code CLI"
-version: "1.1.4"
-slug: "claude_terminal"
+name: "Warp Terminal"
+description: "AI-powered terminal for Home Assistant using Warp CLI agents"
+version: "2.0.0"
+slug: "warp_terminal"
 init: false
 
 # Supported architectures
@@ -11,13 +11,13 @@ arch:
   - armv7
 
 # External resources
-url: "https://github.com/anthropics/claude-code"
+url: "https://docs.warp.dev/developers/cli"
 
 # Web interface configuration
 ingress: true
 ingress_port: 7681
-panel_icon: mdi:code-braces
-panel_title: "Claude Terminal"
+panel_icon: mdi:robot
+panel_title: "Warp Terminal"
 panel_admin: true
 
 # Port configuration
@@ -28,15 +28,15 @@ ports_description:
 
 # Add-on configuration options
 options:
-  auto_launch_claude:
-    name: "Auto-launch Claude"
-    description: "Automatically start Claude on terminal open (disable for interactive session picker)"
+  auto_launch_warp:
+    name: "Auto-launch Warp Shell"
+    description: "Automatically start Warp shell on terminal open (disable for interactive session picker)"
 schema:
-  auto_launch_claude: bool?
+  auto_launch_warp: bool?
 
 # Volume mapping for persistent storage
 map:
-  - config:rw    # Claude configuration and credentials
+  - config:rw    # Warp configuration and credentials
   - addons:rw    # Access to other add-ons for development
 
 # Service startup configuration
